@@ -5,7 +5,8 @@ package cmd
 
 import (
 	"fmt"
-	"jbcool17/confighandler/internal/handler"
+
+	"github.com/jbcool17/confighandler/internal/handler"
 
 	"github.com/spf13/cobra"
 )

@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"jbcool17/confighandler/internal/env"
-	"jbcool17/confighandler/utils"
 	"log"
 	"os"
+
+	"github.com/jbcool17/confighandler/internal/env"
+	"github.com/jbcool17/confighandler/utils"
 
 	"gopkg.in/yaml.v3"
 )

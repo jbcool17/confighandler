@@ -4,7 +4,7 @@ Copyright © 2026 jbcool17
 package main
 
 import (
-	"jbcool17/confighandler/cmd"
+	"github.com/jbcool17/confighandler/cmd"
 )
 
 func main() {

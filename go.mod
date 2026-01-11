@@ -1,4 +1,4 @@
-module jbcool17/confighandler
+module github.com/jbcool17/confighandler
 
 go 1.25.4
 

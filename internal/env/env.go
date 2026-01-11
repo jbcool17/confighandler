@@ -6,7 +6,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"jbcool17/confighandler/utils"
+	"github.com/jbcool17/confighandler/utils"
 )
 
 type EnvConfigs struct {

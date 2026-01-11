@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"jbcool17/confighandler/internal/env"
+	"github.com/jbcool17/confighandler/internal/env"
 
 	"github.com/spf13/cobra"
 )
