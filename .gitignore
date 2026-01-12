@@ -34,3 +34,6 @@ go.work.sum
 test-directory/
 # Added by goreleaser init:
 dist/
+.env
+tmp*
+oci/
