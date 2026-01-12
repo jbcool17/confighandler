@@ -19,3 +19,13 @@ go run . generate
 ```
 go install github.com/jbcool17/confighandler@latest
 ```
+
+
+## OCI
+
+```bash
+tar -czf demo.tar.gz demo
+
+oras login
+oras push docker.io/jbcool17/myartifact:1.0.0 demo.tar.gz:application/vnd.oci.image.layer.v1.tar+gzip
+```
