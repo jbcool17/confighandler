@@ -38,3 +38,4 @@ dist/
 tmp*
 oci/
 !internal/oci/
+python/
