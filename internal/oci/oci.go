@@ -19,11 +19,77 @@ import (
 
 func Execute() {
 	fmt.Println("Pushing OCI artifact...")
-	push()
-	pull()
-
+	fileNames := []string{"test-demo.tar.gz", "test-directory"}
+	tag := "0.3.0"
+	push(fileNames, tag)
+	pull(tag)
 }
-func push() {
+
+func connect() *remote.Repository {
+	// Connect to a remote repository
+	reg := os.Getenv("DOCKER_DOMAIN")
+	repo, err := remote.NewRepository(reg + "/" + os.Getenv("DOCKER_USER") + "/demo-oci")
+	if err != nil {
+		panic(err)
+	}
+
+	repo.Client = &auth.Client{
+		Client: retry.DefaultClient,
+		Cache:  auth.NewCache(),
+		Credential: auth.StaticCredential(reg, auth.Credential{
+			Username: os.Getenv("DOCKER_USER"),
+			Password: os.Getenv("DOCKER_TOKEN"),
+		}),
+	}
+
+	return repo
+}
+
+// func CopyOCI(ctx context.Context, src content.ReadOnlyStorage, dst content.Storage, ref v1.Descriptor) (ocispec.Descriptor, error) {
+
+// 	log.Printf("Copying OCI artifact: %s\n", ref)
+
+// 	err := oras.CopyGraph(
+// 		ctx,
+// 		src,
+// 		dst,
+// 		ref,
+// 		oras.DefaultCopyGraphOptions,
+// 	)
+// 	if err != nil {
+// 		return ocispec.Descriptor{}, err
+// 	}
+// 	log.Printf("Successfully copied OCI artifact: %s\n", ref)
+// 	return ref, nil
+// }
+
+func copyToRemote(ctx context.Context, fs *file.Store, repo *remote.Repository, tag string) v1.Descriptor {
+	// Copy from the file store to the remote repository
+	log.Printf("Copying OCI artifact with tag: %s %s\n", tag, repo.Reference)
+
+	// Copy from the file store to the remote repository
+	manifestDescriptor, err := oras.Copy(ctx, fs, tag, repo, tag, oras.DefaultCopyOptions)
+	if err != nil {
+		panic(err)
+	}
+	log.Printf("Successfully copied OCI artifact with tag: %s %s\n", tag, repo.Reference)
+	return manifestDescriptor
+}
+
+func copyFromRemote(ctx context.Context, fs *file.Store, repo *remote.Repository, tag string) v1.Descriptor {
+	// Copy from the file store to the remote repository
+	log.Printf("Copying OCI artifact with tag: %s %s\n", tag, repo.Reference)
+
+	// Copy from the remote repository to the file store
+	manifestDescriptor, err := oras.Copy(ctx, repo, tag, fs, tag, oras.DefaultCopyOptions)
+	if err != nil {
+		panic(err)
+	}
+	log.Printf("Successfully copied OCI artifact with tag: %s %s\n", tag, repo.Reference)
+	return manifestDescriptor
+}
+
+func push(fileNames []string, tag string) {
 	// 0. Create a file store
 	fs, err := file.New("tmp/")
 	if err != nil {
@@ -39,9 +105,10 @@ func push() {
 
 	// 1. Add files to the file store
 	mediaType := "application/vnd.test.file"
-	fileNames := []string{"test-demo.tar.gz", "tmp/myfile", "test-directory"}
+	// fileNames //:= manifestsPath //[]string{"test-demo.tar.gz", "tmp/myfile", "test-directory"}
 	fileDescriptors := make([]v1.Descriptor, 0, len(fileNames))
 	for _, name := range fileNames {
+		log.Printf("Adding file to OCI artifact: %s\n", name)
 		fileDescriptor, err := fs.Add(ctx, name, mediaType, "")
 		if err != nil {
 			panic(err)
@@ -49,6 +116,9 @@ func push() {
 		fileDescriptors = append(fileDescriptors, fileDescriptor)
 		fmt.Printf("file descriptor for %s: %v\n", name, fileDescriptor)
 	}
+
+	log.Printf("Total files added to OCI artifact: %d\n", len(fileDescriptors))
+	// log.Printf("%v", fileDescriptors)
 
 	// 2. Pack the files and tag the packed manifest
 	artifactType := "application/vnd.test.artifact"
@@ -61,35 +131,17 @@ func push() {
 	}
 	fmt.Println("manifest descriptor:", manifestDescriptor)
 
-	tag := "0.1.0"
 	if err = fs.Tag(ctx, manifestDescriptor, tag); err != nil {
 		panic(err)
 	}
 
 	// 3. Connect to a remote repository
-	reg := os.Getenv("DOCKER_DOMAIN")
-	repo, err := remote.NewRepository(reg + "/" + os.Getenv("DOCKER_USER") + "/demo-oci")
-	if err != nil {
-		panic(err)
-	}
-
-	repo.Client = &auth.Client{
-		Client: retry.DefaultClient,
-		Cache:  auth.NewCache(),
-		Credential: auth.StaticCredential(reg, auth.Credential{
-			Username: os.Getenv("DOCKER_USER"),
-			Password: os.Getenv("DOCKER_TOKEN"),
-		}),
-	}
-
+	repo := connect()
 	// 4. Copy from the file store to the remote repository
-	_, err = oras.Copy(ctx, fs, tag, repo, tag, oras.DefaultCopyOptions)
-	if err != nil {
-		panic(err)
-	}
+	copyToRemote(ctx, fs, repo, tag)
 }
 
-func pull() {
+func pull(tag string) {
 	fmt.Println("Pulling OCI artifact...")
 	// 0. Create a file store
 	fs, err := file.New("tmp-out/")
@@ -105,27 +157,10 @@ func pull() {
 
 	// 1. Connect to a remote repository
 	ctx := context.Background()
-	reg := os.Getenv("DOCKER_DOMAIN")
-	repo, err := remote.NewRepository(reg + "/" + os.Getenv("DOCKER_USER") + "/demo-oci")
-	if err != nil {
-		panic(err)
-	}
-
-	repo.Client = &auth.Client{
-		Client: retry.DefaultClient,
-		Cache:  auth.NewCache(),
-		Credential: auth.StaticCredential(reg, auth.Credential{
-			Username: os.Getenv("DOCKER_USER"),
-			Password: os.Getenv("DOCKER_TOKEN"),
-		}),
-	}
+	repo := connect()
 
 	// 2. Copy from the remote repository to the file store
-	tag := "0.1.0"
-	manifestDescriptor, err := oras.Copy(ctx, repo, tag, fs, tag, oras.DefaultCopyOptions)
-	if err != nil {
-		panic(err)
-	}
+	manifestDescriptor := copyFromRemote(ctx, fs, repo, tag)
 	fmt.Println("manifest descriptor:", manifestDescriptor)
 
 	// 3. List the files pulled to the file store
