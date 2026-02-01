@@ -191,3 +191,73 @@ func setYAMLPath(node *yaml.Node, path []string, value string) error {
 	node.Content = append(node.Content, kNode, vNode)
 	return nil
 }
+
+// DEBUG - YAML
+
+func DumpYAMLNode(n *yaml.Node) {
+	fmt.Println("YAML Node Dump:")
+	dumpNode(n, 0, "")
+}
+
+func dumpNode(n *yaml.Node, indent int, label string) {
+	if n == nil {
+		return
+	}
+
+	prefix := strings.Repeat("  ", indent)
+
+	kind := map[yaml.Kind]string{
+		yaml.DocumentNode: "Document",
+		yaml.MappingNode:  "Mapping",
+		yaml.SequenceNode: "Sequence",
+		yaml.ScalarNode:   "Scalar",
+		yaml.AliasNode:    "Alias",
+	}[n.Kind]
+
+	if label != "" {
+		label = label + ": "
+	}
+
+	fmt.Printf(
+		"%s%s[%s] Tag=%q Value=%q Anchor=%q (line=%d col=%d)\n",
+		prefix,
+		label,
+		kind,
+		n.Tag,
+		n.Value,
+		n.Anchor,
+		n.Line,
+		n.Column,
+	)
+
+	switch n.Kind {
+
+	case yaml.DocumentNode:
+		for _, c := range n.Content {
+			dumpNode(c, indent+1, "document")
+		}
+
+	case yaml.MappingNode:
+		for i := 0; i < len(n.Content); i += 2 {
+			key := n.Content[i]
+			val := n.Content[i+1]
+
+			fmt.Printf("%s  Key:\n", prefix)
+			dumpNode(key, indent+2, "key")
+
+			fmt.Printf("%s  Value:\n", prefix)
+			dumpNode(val, indent+2, "value")
+		}
+
+	case yaml.SequenceNode:
+		for i, c := range n.Content {
+			dumpNode(c, indent+1, fmt.Sprintf("item[%d]", i))
+		}
+
+	case yaml.ScalarNode:
+		// nothing more to recurse into
+
+	case yaml.AliasNode:
+		dumpNode(n.Alias, indent+1, "alias")
+	}
+}

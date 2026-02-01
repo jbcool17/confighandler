@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/jbcool17/confighandler/cm-cli/pkg"
 )
@@ -20,59 +19,25 @@ func main() {
 	switch cmd {
 	case "generate":
 		fs := flag.NewFlagSet("generate", flag.ExitOnError)
+		filename := fs.String("filename", "test.yaml", "output filename")
 		name := fs.String("name", "default-cluster", "cluster name")
 		root := fs.String("root", "configs", "root folder for configs")
 		fmt.Println("Generating with name:", *name, "and root:", *root)
-		// allow flags before or after filename by extracting filename first
-		tokens := os.Args[2:]
-		fnameIdx := -1
-		for i, t := range tokens {
-			if !strings.HasPrefix(t, "-") {
-				fnameIdx = i
-				break
-			}
-		}
-		if fnameIdx == -1 {
-			fmt.Println("usage: cm-cli generate <filename> [--name NAME] [--root ROOT]")
-			os.Exit(1)
-		}
-		filename := tokens[fnameIdx]
-		// build slice of flag tokens (everything except the filename)
-		flagTokens := append([]string{}, tokens[:fnameIdx]...)
-		if fnameIdx+1 < len(tokens) {
-			flagTokens = append(flagTokens, tokens[fnameIdx+1:]...)
-		}
-		fs.Parse(flagTokens)
 
-		if err := pkg.Generate(filename, *name, *root); err != nil {
+		if err := pkg.Generate(*filename, *name, *root); err != nil {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			os.Exit(1)
 		}
 	case "modify":
 		fs := flag.NewFlagSet("modify", flag.ExitOnError)
+		filename := fs.String("filename", "test.yaml", "output filename")
 		keyvalue := fs.String("keyvalue", "", "comma separated list of key=value pairs")
 		root := fs.String("root", "configs", "root folder for configs")
 
-		tokens := os.Args[2:]
-		fnameIdx := -1
-		for i, t := range tokens {
-			if !strings.HasPrefix(t, "-") {
-				fnameIdx = i
-				break
-			}
-		}
-		if fnameIdx == -1 {
-			fmt.Println("usage: cm-cli modify <filename> --keyvalue key=val[,k2=v2] [--root ROOT]")
-			os.Exit(1)
-		}
-		filename := tokens[fnameIdx]
-		flagTokens := append([]string{}, tokens[:fnameIdx]...)
-		if fnameIdx+1 < len(tokens) {
-			flagTokens = append(flagTokens, tokens[fnameIdx+1:]...)
-		}
-		fs.Parse(flagTokens)
+		// process flags
+		fs.Parse(os.Args[2:])
 
-		if err := pkg.Modify(filename, *keyvalue, *root); err != nil {
+		if err := pkg.Modify(*filename, *keyvalue, *root); err != nil {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			os.Exit(1)
 		}
@@ -82,6 +47,15 @@ func main() {
 		fs.Parse(os.Args[2:])
 
 		if err := pkg.GenerateSchema(*output); err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
+	case "debugyaml":
+		fs := flag.NewFlagSet("debugyaml", flag.ExitOnError)
+		filename := fs.String("filename", "test.yaml", "output filename")
+		root := fs.String("root", "configs", "root folder for configs")
+
+		if err := pkg.DebugYAML(*filename, *root); err != nil {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			os.Exit(1)
 		}

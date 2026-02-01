@@ -11,6 +11,7 @@ import (
 
 // Generate creates a default cluster yaml file in root/<filename>
 func Generate(filename, name, root string) error {
+	fmt.Println("Generating", filename, "with name", name, "in", root)
 	if err := ensureRootDir(root); err != nil {
 		return err
 	}
@@ -84,19 +85,50 @@ func GenerateSchema(outputPath string) error {
 	return GenerateSchemaFromStruct(outputPath)
 }
 
+// Debug helper for YAML
+func DebugYAML(filename string, root string) error {
+	// root := "configs"
+	// filename := "test-01.yaml"
+	target := filepath.Join(root, filename)
+	content, err := os.ReadFile(target)
+	if err != nil {
+		return fmt.Errorf("error reading file: %v\n", err)
+	}
+
+	var doc yaml.Node
+	if err := yaml.Unmarshal(content, &doc); err != nil {
+		return fmt.Errorf("yaml unmarshal: %w", err)
+	}
+	if len(doc.Content) == 0 {
+		return fmt.Errorf("empty document")
+
+	}
+	fmt.Println("YAML Document Content Length:", len(doc.Content))
+	fmt.Printf("YAML Document Content: %+v\n", doc)
+	rootNode := doc.Content[0]
+
+	fmt.Printf("Original YAML Node:\n%+v\n", rootNode)
+	fmt.Println("-----")
+	DumpYAMLNode(&doc)
+	return nil
+}
+
 // Help returns the help message for cm-cli
 func Help() string {
 	return `cm-cli - simple config manager
 
 Usage:
-  cm-cli generate <filename> [--name NAME] [--root ROOT]
+  cm-cli generate [--filename FILENAME] [--name NAME] [--root ROOT]
     Generate a default cluster YAML file. Default name: "default-cluster", default root: "configs".
 
-  cm-cli modify <filename> --keyvalue key=value[,k2=v2] [--root ROOT]
+  cm-cli modify [--filename FILENAME] [--keyvalue KEYVALUE] [--root ROOT]
     Modify fields in an existing YAML using comma-separated key=value pairs. Use dot notation for nested fields: network_config.pod_cidr=pod-cidr-2
 
-  cm-cli schema [--output PATH]
+  cm-cli schema [--output OUTPUT]
     Generate JSON schema from struct definitions. Default output: schemas/cluster.schema.json
+
+  cm-cli debugyaml [--filename FILENAME] [--root ROOT]
+	Debug and dump the YAML node structure of the specified file in the configs/ directory.
 
   cm-cli help
     Print this help message.
