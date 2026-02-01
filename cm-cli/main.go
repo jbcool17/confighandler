@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"cm-cli/pkg"
+	"github.com/jbcool17/confighandler/cm-cli/pkg"
 )
 
 func main() {
