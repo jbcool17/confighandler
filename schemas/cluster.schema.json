@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "feature_one": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "type": "object"
+    },
+    "feature_two": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "type": "object"
+    },
+    "location": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "network_config": {
+      "properties": {
+        "network": {
+          "type": "string"
+        },
+        "pod_cidr": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "network",
+        "pod_cidr"
+      ],
+      "type": "object"
+    },
+    "node_pools": {
+      "items": {
+        "properties": {
+          "machine_type": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "machine_type"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "test": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "location",
+    "network_config",
+    "node_pools",
+    "feature_one",
+    "feature_two",
+    "test"
+  ],
+  "title": "Cluster Configuration",
+  "type": "object"
+}
