@@ -23,7 +23,7 @@ var generateCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(generateCmd)
+	envCmd.AddCommand(generateCmd)
 
 	// Here you will define your flags and configuration settings.
 

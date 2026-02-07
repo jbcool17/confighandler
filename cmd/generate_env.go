@@ -14,7 +14,7 @@ import (
 
 // generateEnvCmd represents the generate-env command
 var generateEnvCmd = &cobra.Command{
-	Use:   "generate-env [name]",
+	Use:   "setup [name]",
 	Short: "Create an env YAML file for an environment",
 	Long:  `Creates an env/<name>.yaml file describing the environment and target folder (configs/<name>).`,
 	Args:  cobra.MaximumNArgs(1),
@@ -58,6 +58,6 @@ var generateEnvCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(generateEnvCmd)
+	envCmd.AddCommand(generateEnvCmd)
 	generateEnvCmd.Flags().StringP("name", "n", "", "Name of the environment to create")
 }

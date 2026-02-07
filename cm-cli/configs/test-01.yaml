@@ -1,0 +1,11 @@
+---
+name: test-01
+location: us-central1-a
+network_config:
+    network: default
+    pod_cidr: 10.0.0.0/16
+node_pools:
+    - name: default-pool
+      machine_type: e2-medium
+feature_one:
+    enabled: false
