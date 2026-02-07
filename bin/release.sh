@@ -1,4 +1,4 @@
-VERSION="v0.2.0"
+VERSION="v0.3.0"
 git tag -a $VERSION -m "Add cluster configuration handler"
 git push origin $VERSION
 
