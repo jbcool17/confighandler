@@ -4,7 +4,7 @@ git push origin $VERSION
 
 
 if [ $? -eq 0 ]; then
-    goreleaser release --rm-dist
+    goreleaser release
 else
     echo "Git tagging failed. Aborting release."
 fi
