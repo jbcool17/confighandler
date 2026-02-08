@@ -12,9 +12,15 @@ on:
           - patch
           - minor
           - major
+      trigger_release:
+        description: 'Trigger GoReleaser after bump'
+        required: false
+        default: true
+        type: boolean
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   bump:
@@ -36,3 +42,10 @@ jobs:
       - name: Verify tag
         run: |
           git describe --tags --abbrev=0
+
+      - name: Trigger GoReleaser
+        if: ${{ inputs.trigger_release }}
+        run: |
+          gh workflow run goreleaser.yaml
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
