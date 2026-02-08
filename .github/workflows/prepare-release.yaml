@@ -48,4 +48,4 @@ jobs:
         run: |
           gh workflow run goreleaser.yaml
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
