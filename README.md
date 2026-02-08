@@ -1,6 +1,6 @@
 # confighandler
 
-A small CLI for managing YAML configuration files with JSON schema support.
+An example CLI for managing YAML configuration files with JSON schema support.
 
 ## Features
 
