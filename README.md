@@ -28,6 +28,31 @@ go run . cluster debugyaml --filename=my.yaml --root=configs
 
 go run . env generate
 go run . env setup --name=test
+
+# View version info
+go run . version
+```
+
+## Version Management
+
+Check the current version:
+```bash
+confighandler version
+```
+
+For detailed version management (bumping versions, releases, and build info), see [VERSION_MANAGEMENT.md](VERSION_MANAGEMENT.md).
+
+### Releasing
+
+Use the **bump-version** workflow in GitHub Actions:
+1. Go to **Actions** → **bump-version**
+2. Click **Run workflow**
+3. Select `patch`, `minor`, or `major`
+4. The workflow creates a new tag and triggers an automatic release
+
+Or manually bump locally:
+```bash
+./scripts/bump-version.sh patch   # or minor, major
 ```
 
 ## Testing
