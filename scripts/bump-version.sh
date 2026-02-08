@@ -43,5 +43,5 @@ echo "Bumping version: $CURRENT -> ${NEW_VERSION#v}"
 git tag -a "$NEW_VERSION" -m "Release $NEW_VERSION"
 git push origin "$NEW_VERSION"
 
-echo "✓ Tagged and pushed $NEW_VERSION"
-echo "✓ GoReleaser will automatically create a release"
+echo "Tagged and pushed $NEW_VERSION"
+echo "GoReleaser will automatically create a release"
