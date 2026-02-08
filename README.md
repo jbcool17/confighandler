@@ -63,6 +63,14 @@ go test ./cm-cli/pkg -v
 
 ## Install
 
+**Recommended: Download pre-built binary**
+
+Visit [GitHub Releases](https://github.com/jbcool17/confighandler/releases) and download the latest binary for your platform. Pre-built binaries include full version information (version, build time, commit).
+
+**Alternative: Install from source**
+
 ```bash
 go install github.com/jbcool17/confighandler@latest
 ```
+
+Note: Installing from source will show basic version info only. For full version details, use pre-built binaries.
