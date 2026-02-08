@@ -45,10 +45,10 @@ For detailed version management (bumping versions, releases, and build info), se
 ### Releasing
 
 Use the **bump-version** workflow in GitHub Actions:
-1. Go to **Actions** → **bump-version**
-2. Click **Run workflow**
-3. Select `patch`, `minor`, or `major`
-4. The workflow creates a new tag and triggers an automatic release
+1. Go to **Actions** → **bump-version** → **Run workflow**
+2. Select version type: `patch`, `minor`, or `major`
+3. Toggle **trigger_release** to auto-release (default: on)
+4. Workflow creates tag and optionally triggers GoReleaser
 
 Or manually bump locally:
 ```bash
