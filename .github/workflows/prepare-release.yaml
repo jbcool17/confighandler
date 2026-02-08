@@ -1,4 +1,4 @@
-name: bump-version
+name: prepare-release
 
 on:
   workflow_dispatch:

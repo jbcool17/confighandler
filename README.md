@@ -44,8 +44,8 @@ For detailed version management (bumping versions, releases, and build info), se
 
 ### Releasing
 
-Use the **bump-version** workflow in GitHub Actions:
-1. Go to **Actions** → **bump-version** → **Run workflow**
+Use the **prepare-release** workflow in GitHub Actions:
+1. Go to **Actions** → **prepare-release** → **Run workflow**
 2. Select version type: `patch`, `minor`, or `major`
 3. Toggle **trigger_release** to auto-release (default: on)
 4. Workflow creates tag and optionally triggers GoReleaser
@@ -65,7 +65,16 @@ go test ./cm-cli/pkg -v
 
 **Recommended: Download pre-built binary**
 
-Visit [GitHub Releases](https://github.com/jbcool17/confighandler/releases) and download the latest binary for your platform. Pre-built binaries include full version information (version, build time, commit).
+```bash
+VERSION=v0.4.5
+OS=Darwin          # or Linux
+ARCH=arm64         # or x86_64, i386, etc.
+
+curl -L https://github.com/jbcool17/confighandler/releases/download/$VERSION/confighandler_${OS}_${ARCH}.tar.gz | tar xz
+sudo mv confighandler /usr/local/bin/
+```
+
+See [GitHub Releases](https://github.com/jbcool17/confighandler/releases) for available versions and platform options.
 
 **Alternative: Install from source**
 
