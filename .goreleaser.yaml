@@ -22,6 +22,11 @@ builds:
       - linux
       - windows
       - darwin
+    ldflags:
+      - -s -w
+      - -X github.com/jbcool17/confighandler/internal/version.Version={{.Version}}
+      - -X github.com/jbcool17/confighandler/internal/version.BuildTime={{.Date}}
+      - -X github.com/jbcool17/confighandler/internal/version.GitCommit={{.Commit}}
 
 archives:
   - formats: [tar.gz]
